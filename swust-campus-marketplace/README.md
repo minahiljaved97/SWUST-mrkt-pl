@@ -55,4 +55,16 @@ App: http://localhost:5173/
 
 # Notes
 Do not commit `.env`. Production must use PostgreSQL and `config.settings.production`.
-Business features (listings, messaging, reports) are not implemented in Phase 1.
+Business APIs and frontend marketplace features are implemented in later phases.
+
+# Database / admin (Phase 2)
+After migrations, the five categories are seeded automatically.
+You can re-run seeding with:
+
+python manage.py seed_categories
+
+Create an admin user:
+
+python manage.py createsuperuser
+
+Then open http://127.0.0.1:8000/admin/
