@@ -1,2 +1,1 @@
-// Feature modules (auth, listings, messages) are added in later phases.
-export {};
+export { AuthProvider, useAuth } from "./auth/AuthContext";

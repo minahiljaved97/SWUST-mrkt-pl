@@ -53,6 +53,18 @@ npm run dev
 
 App: http://localhost:5173/
 
+# Auth endpoints (Phase 3)
+- POST /api/v1/auth/register/
+- POST /api/v1/auth/login/
+- POST /api/v1/auth/token/refresh/
+- POST /api/v1/auth/logout/
+- GET|PATCH /api/v1/auth/me/
+- GET|PATCH /api/v1/auth/users/ (admin only)
+
+Frontend routes: `/login`, `/register`, `/profile`, `/admin/users`
+
+SWUST email domains are configured with `ALLOWED_EMAIL_DOMAINS` in `backend/.env`.
+
 # Notes
 Do not commit `.env`. Production must use PostgreSQL and `config.settings.production`.
 Business APIs and frontend marketplace features are implemented in later phases.

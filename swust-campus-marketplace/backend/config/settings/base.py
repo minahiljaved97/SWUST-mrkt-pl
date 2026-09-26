@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "django_filters",
     "corsheaders",
     "drf_spectacular",
@@ -116,6 +117,13 @@ REST_FRAMEWORK = {
     "DEFAULT_VERSION": "v1",
     "ALLOWED_VERSIONS": ("v1",),
     "VERSION_PARAM": "version",
+    "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
+    "DEFAULT_THROTTLE_RATES": {
+        "auth_burst": "10/min",
+        "auth_sustained": "60/hour",
+        "user": "1000/day",
+        "anon": "200/day",
+    },
 }
 
 SIMPLE_JWT = {
@@ -126,7 +134,7 @@ SIMPLE_JWT = {
         days=int(env("JWT_REFRESH_DAYS", "7") or "7")
     ),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": False,
+    "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
     "SIGNING_KEY": env("JWT_SIGNING_KEY") or SECRET_KEY,
     "UPDATE_LAST_LOGIN": True,
