@@ -17,9 +17,13 @@ class ReportStatus(models.TextChoices):
 class ReportReason(models.TextChoices):
     SPAM = "SPAM", "Spam"
     FRAUD = "FRAUD", "Fraud / scam"
-    INAPPROPRIATE = "INAPPROPRIATE", "Inappropriate content"
-    PROHIBITED = "PROHIBITED", "Prohibited item"
+    INAPPROPRIATE_CONTENT = "INAPPROPRIATE_CONTENT", "Inappropriate content"
+    WRONG_INFORMATION = "WRONG_INFORMATION", "Wrong information"
+    DUPLICATE_LISTING = "DUPLICATE_LISTING", "Duplicate listing"
     OTHER = "OTHER", "Other"
+
+
+OPEN_REPORT_STATUSES = (ReportStatus.PENDING, ReportStatus.REVIEWING)
 
 
 class Report(models.Model):

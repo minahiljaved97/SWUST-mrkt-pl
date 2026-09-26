@@ -6,11 +6,14 @@ import { fetchCategories, fetchListings } from "../api/marketplace";
 import { getApiErrorMessage } from "../api/client";
 import {
   Button,
+  Card,
   CategoryCard,
+  Chip,
   EmptyState,
   ErrorMessage,
   ListingGrid,
   LoadingSkeleton,
+  PageHeader,
   SearchBar,
 } from "../components";
 import { useAuth } from "../features/auth/AuthContext";
@@ -53,40 +56,46 @@ export function HomePage() {
 
   if (!isAuthenticated) {
     return (
-      <section className="space-y-8">
-        <div className="rounded-lg border border-slate-200 bg-white px-6 py-10">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
-            SWUST Campus Marketplace
+      <section className="space-y-6">
+        <Card padding="lg" className="overflow-hidden">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">
+            SWUST students
+          </p>
+          <h1 className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+            Campus Marketplace
           </h1>
-          <p className="mt-3 max-w-2xl text-slate-600">
+          <p className="mt-3 max-w-2xl muted">
             Buy, borrow, and exchange student items across campus. Sign in with
             your SWUST email to browse live listings.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={() => navigate("/login")}>Sign in</Button>
-            <Button variant="secondary" onClick={() => navigate("/register")}>
+            <Button size="lg" onClick={() => navigate("/login")}>
+              Sign in
+            </Button>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={() => navigate("/register")}
+            >
               Register
             </Button>
           </div>
-        </div>
+        </Card>
       </section>
     );
   }
 
   return (
     <section className="space-y-10">
-      <div className="space-y-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
-              Campus Marketplace
-            </h1>
-            <p className="mt-2 text-slate-600">
-              Find textbooks, bikes, electronics, and more from SWUST students.
-            </p>
-          </div>
-          <Button onClick={() => navigate("/listings/new")}>Add listing</Button>
-        </div>
+      <div className="space-y-5">
+        <PageHeader
+          eyebrow="Campus marketplace"
+          title="Find what you need on campus"
+          description="Textbooks, bikes, electronics, and more from SWUST students."
+          actions={
+            <Button onClick={() => navigate("/listings/new")}>Add listing</Button>
+          }
+        />
         <SearchBar
           value={search}
           onChange={setSearch}
@@ -98,35 +107,37 @@ export function HomePage() {
             navigate(`/marketplace?${params.toString()}`);
           }}
         />
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Transaction type">
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label="Transaction type"
+        >
           {TYPE_FILTERS.map((item) => (
-            <button
+            <Chip
               key={item.label}
-              type="button"
-              className={`rounded-md px-3 py-1.5 text-sm ${
-                transactionType === item.value
-                  ? "bg-slate-900 text-white"
-                  : "border border-slate-300 bg-white text-slate-700"
-              }`}
+              active={transactionType === item.value}
               onClick={() => setTransactionType(item.value)}
             >
               {item.label}
-            </button>
+            </Chip>
           ))}
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Categories</h2>
-          <Link className="text-sm text-slate-600 underline" to="/marketplace">
+          <h2 className="section-title">Categories</h2>
+          <Link className="text-sm font-medium text-brand-700 hover:underline" to="/marketplace">
             Browse all
           </Link>
         </div>
         {categoriesQuery.isPending ? <LoadingSkeleton count={3} /> : null}
         {categoriesQuery.isError ? (
           <ErrorMessage
-            message={getApiErrorMessage(categoriesQuery.error, "Could not load categories.")}
+            message={getApiErrorMessage(
+              categoriesQuery.error,
+              "Could not load categories.",
+            )}
           />
         ) : null}
         {categoriesQuery.data ? (
@@ -140,15 +151,18 @@ export function HomePage() {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Recent listings</h2>
-          <Link className="text-sm text-slate-600 underline" to="/marketplace">
+          <h2 className="section-title">Recent listings</h2>
+          <Link className="text-sm font-medium text-brand-700 hover:underline" to="/marketplace">
             View marketplace
           </Link>
         </div>
         {listingsQuery.isPending ? <LoadingSkeleton /> : null}
         {listingsQuery.isError ? (
           <ErrorMessage
-            message={getApiErrorMessage(listingsQuery.error, "Could not load listings.")}
+            message={getApiErrorMessage(
+              listingsQuery.error,
+              "Could not load listings.",
+            )}
           />
         ) : null}
         {listingsQuery.data && recent.length === 0 ? (

@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -85,6 +86,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Upload hardening (images are further validated in serializers).
+DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 200
+FILE_UPLOAD_PERMISSIONS = 0o640
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = env_list(
@@ -118,6 +125,10 @@ REST_FRAMEWORK = {
     "ALLOWED_VERSIONS": ("v1",),
     "VERSION_PARAM": "version",
     "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
     "DEFAULT_THROTTLE_RATES": {
         "auth_burst": "10/min",
         "auth_sustained": "60/hour",
@@ -142,11 +153,62 @@ SIMPLE_JWT = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "SWUST Campus Marketplace API",
-    "DESCRIPTION": "REST API for the SWUST Campus Marketplace & Exchange System.",
+    "DESCRIPTION": """
+REST API for the SWUST Campus Marketplace & Exchange System.
+
+## Authentication
+Most endpoints require a JWT Bearer access token from `POST /api/v1/auth/login/`.
+
+Send: `Authorization: Bearer <access>`.
+
+Refresh tokens via `POST /api/v1/auth/token/refresh/`. Logout blacklists the refresh token.
+
+## Permissions
+| Role | Access |
+| --- | --- |
+| Anonymous | Register, login, token refresh, health |
+| Student | Marketplace, favorites, messaging, report creation |
+| Admin | User management, moderation reports, dashboard statistics, category admin |
+
+## Errors
+Error bodies typically look like:
+
+```json
+{ "detail": "Validation failed.", "errors": { "field": ["message"] } }
+```
+
+Common statuses: `400` validation, `401` unauthenticated, `403` forbidden, `404` not found, `429` throttled.
+
+## Pagination
+List endpoints use page-number pagination (`page`, `page_size`, max 50).
+""".strip(),
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api/v1",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_NAME_OVERRIDES": {
+        "ListingStatusEnum": "listings.models.ListingStatus",
+        "ListingConditionEnum": "listings.models.ListingCondition",
+        "TransactionTypeEnum": "listings.models.TransactionType",
+        "ReportStatusEnum": "reports.models.ReportStatus",
+        "ReportReasonEnum": "reports.models.ReportReason",
+        "UserRoleEnum": "accounts.models.UserRole",
+    },
+    "TAGS": [
+        {"name": "Health", "description": "Service health checks."},
+        {"name": "Authentication", "description": "Register, login, refresh, logout."},
+        {"name": "Users & Profiles", "description": "Current user profile and admin user management."},
+        {"name": "Categories", "description": "Marketplace category catalog."},
+        {"name": "Listings", "description": "Create, browse, and manage listings."},
+        {"name": "Listing Images", "description": "Listing photo upload and management."},
+        {"name": "Favorites", "description": "Student favorites for listings."},
+        {"name": "Conversations", "description": "Listing-linked student conversations."},
+        {"name": "Messages", "description": "Conversation messages and read state."},
+        {"name": "Reports", "description": "Student report submission."},
+        {"name": "Admin Reports", "description": "Administrator report moderation."},
+        {"name": "Admin Dashboard", "description": "Admin users, listings, categories, and statistics."},
+    ],
 }
 
 ALLOWED_EMAIL_DOMAINS = env_list(

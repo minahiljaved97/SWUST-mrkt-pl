@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { fetchCategories, fetchListings } from "../api/marketplace";
 import { getApiErrorMessage } from "../api/client";
@@ -11,6 +11,7 @@ import {
   FilterPanel,
   ListingGrid,
   LoadingSkeleton,
+  PageHeader,
   Pagination,
   SearchBar,
   type MarketplaceFilterState,
@@ -20,6 +21,7 @@ import type { ListingCondition, TransactionType } from "../types/marketplace";
 const PAGE_SIZE = 12;
 
 export function MarketplacePage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState(searchParams.get("search") ?? "");
 
@@ -80,17 +82,13 @@ export function MarketplacePage() {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Marketplace</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Search and filter live campus listings.
-          </p>
-        </div>
-        <Button as-child={undefined} onClick={() => undefined}>
-          <Link to="/listings/new">Add listing</Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Marketplace"
+        description="Search and filter live campus listings."
+        actions={
+          <Button onClick={() => navigate("/listings/new")}>Add listing</Button>
+        }
+      />
 
       <SearchBar
         value={searchInput}
@@ -98,7 +96,7 @@ export function MarketplacePage() {
         onSubmit={() => updateParams({ search: searchInput.trim(), page: 1 })}
       />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
         <FilterPanel
           filters={filters}
           categories={(categoriesQuery.data ?? []).map((item) => ({
@@ -133,9 +131,9 @@ export function MarketplacePage() {
               title="No matching listings"
               description="Try clearing filters or posting a new item."
               action={
-                <Link className="text-sm underline" to="/listings/new">
+                <Button variant="secondary" onClick={() => navigate("/listings/new")}>
                   Add listing
-                </Link>
+                </Button>
               }
             />
           ) : null}

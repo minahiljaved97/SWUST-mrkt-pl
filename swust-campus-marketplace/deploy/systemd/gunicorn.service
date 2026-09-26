@@ -1,0 +1,39 @@
+# /etc/systemd/system/gunicorn.service
+#
+# Copy to the server, then:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now gunicorn
+#
+# Adjust User, WorkingDirectory, and EnvironmentFile to match your paths.
+# Do not put secrets in this unit file — use EnvironmentFile with mode 600.
+
+[Unit]
+Description=SWUST Campus Marketplace API (Gunicorn)
+After=network.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+RuntimeDirectory=gunicorn
+WorkingDirectory=/var/www/swust-api/current/backend
+EnvironmentFile=-/etc/swust-api/env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+ExecStart=/var/www/swust-api/current/backend/.venv/bin/gunicorn \
+    --config gunicorn.conf.py \
+    config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=30
+Restart=always
+RestartSec=5
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/www/swust-api /var/log/swust-api
+
+[Install]
+WantedBy=multi-user.target

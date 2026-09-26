@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { getApiErrorMessage, getFieldErrors } from "../api/client";
-import { Button, ErrorMessage, Input } from "../components";
+import { Button, Card, ErrorMessage, Input, PageHeader, useToast } from "../components";
 import { useAuth } from "../features/auth/AuthContext";
 
 const schema = z.object({
@@ -21,6 +21,7 @@ type FormValues = z.infer<typeof schema>;
 export function RegisterPage() {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
+  const { pushToast } = useToast();
   const [formError, setFormError] = useState("");
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -37,7 +38,8 @@ export function RegisterPage() {
     setFormError("");
     try {
       await registerUser(values);
-      navigate("/profile", { replace: true });
+      pushToast("Account created. Welcome to the marketplace.", "success");
+      navigate("/marketplace", { replace: true });
     } catch (error) {
       const fields = getFieldErrors(error);
       for (const [key, message] of Object.entries(fields)) {
@@ -57,50 +59,50 @@ export function RegisterPage() {
 
   return (
     <section className="mx-auto max-w-md space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Create student account</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Registration is limited to configured SWUST email domains.
-        </p>
-      </div>
-      {formError ? <ErrorMessage message={formError} /> : null}
-      <form className="space-y-4" onSubmit={onSubmit}>
-        <Input
-          label="Email"
-          type="email"
-          autoComplete="email"
-          error={form.formState.errors.email?.message}
-          {...form.register("email")}
-        />
-        <Input
-          label="Student ID"
-          error={form.formState.errors.student_id?.message}
-          {...form.register("student_id")}
-        />
-        <Input
-          label="First name"
-          error={form.formState.errors.first_name?.message}
-          {...form.register("first_name")}
-        />
-        <Input
-          label="Last name"
-          error={form.formState.errors.last_name?.message}
-          {...form.register("last_name")}
-        />
-        <Input
-          label="Password"
-          type="password"
-          autoComplete="new-password"
-          error={form.formState.errors.password?.message}
-          {...form.register("password")}
-        />
-        <Button type="submit" isLoading={form.formState.isSubmitting}>
-          Register
-        </Button>
-      </form>
+      <PageHeader
+        title="Create student account"
+        description="Registration is limited to configured SWUST email domains."
+      />
+      <Card>
+        {formError ? <div className="mb-4"><ErrorMessage message={formError} /></div> : null}
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <Input
+            label="Email"
+            type="email"
+            autoComplete="email"
+            error={form.formState.errors.email?.message}
+            {...form.register("email")}
+          />
+          <Input
+            label="Student ID"
+            error={form.formState.errors.student_id?.message}
+            {...form.register("student_id")}
+          />
+          <Input
+            label="First name"
+            error={form.formState.errors.first_name?.message}
+            {...form.register("first_name")}
+          />
+          <Input
+            label="Last name"
+            error={form.formState.errors.last_name?.message}
+            {...form.register("last_name")}
+          />
+          <Input
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            error={form.formState.errors.password?.message}
+            {...form.register("password")}
+          />
+          <Button type="submit" className="w-full" isLoading={form.formState.isSubmitting}>
+            Register
+          </Button>
+        </form>
+      </Card>
       <p className="text-sm text-slate-600">
         Already registered?{" "}
-        <Link className="underline" to="/login">
+        <Link className="font-medium text-brand-700 hover:underline" to="/login">
           Sign in
         </Link>
       </p>

@@ -44,6 +44,33 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class AdminManagedUserSerializer(serializers.ModelSerializer):
+    """Admin user list/detail without phone or profile image URLs."""
+
+    student_id = serializers.CharField(
+        source="profile.student_id", read_only=True, default=""
+    )
+    campus_location = serializers.CharField(
+        source="profile.campus_location", read_only=True, default=""
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "is_active",
+            "date_joined",
+            "updated_at",
+            "student_id",
+            "campus_location",
+        )
+        read_only_fields = fields
+
+
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8, max_length=128)
@@ -94,6 +121,14 @@ class RegisterSerializer(serializers.Serializer):
         return user
 
 
+class LoginResponseSerializer(serializers.Serializer):
+    """Documented login success payload (tokens + user)."""
+
+    access = serializers.CharField(help_text="JWT access token.")
+    refresh = serializers.CharField(help_text="JWT refresh token.")
+    user = UserSerializer()
+
+
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = User.EMAIL_FIELD
 
@@ -111,6 +146,7 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         data["user"] = UserSerializer(self.user).data
         return data
+
 
 
 class MeUpdateSerializer(serializers.Serializer):

@@ -1,12 +1,14 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+import { Button, EmptyState } from "../components";
 
 export function NotFoundPage() {
+  const navigate = useNavigate();
   return (
-    <section className="space-y-3">
-      <h1 className="text-2xl font-semibold">Page not found</h1>
-      <Link className="text-sm text-slate-600 underline" to="/">
-        Back home
-      </Link>
-    </section>
+    <EmptyState
+      title="Page not found"
+      description="That route does not exist in the campus marketplace."
+      action={<Button onClick={() => navigate("/")}>Back home</Button>}
+    />
   );
 }

@@ -1,0 +1,16 @@
+.venv
+venv
+__pycache__
+*.py[cod]
+*.sqlite3
+db.sqlite3
+.env
+!.env.example
+media
+staticfiles
+*.log
+schema.yaml
+schema.yml
+openapi.json
+.pytest_cache
+.mypy_cache

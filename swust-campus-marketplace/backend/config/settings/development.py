@@ -8,3 +8,7 @@ ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
     "localhost,127.0.0.1,testserver",
 )
+
+# Avoid collectstatic during local/dev; serve app static via finders.
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True

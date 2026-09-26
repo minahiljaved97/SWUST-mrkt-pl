@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { getApiErrorMessage, getFieldErrors } from "../api/client";
-import { Button, ErrorMessage, Input } from "../components";
+import { Button, Card, ErrorMessage, Input, PageHeader, useToast } from "../components";
 import { useAuth } from "../features/auth/AuthContext";
 
 const schema = z.object({
@@ -19,6 +19,7 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { pushToast } = useToast();
   const [formError, setFormError] = useState("");
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -29,13 +30,14 @@ export function LoginPage() {
     setFormError("");
     try {
       await login(values);
+      pushToast("Welcome back.", "success");
       const redirectTo =
         typeof location.state === "object" &&
         location.state &&
         "from" in location.state &&
         typeof location.state.from === "string"
           ? location.state.from
-          : "/profile";
+          : "/marketplace";
       navigate(redirectTo, { replace: true });
     } catch (error) {
       const fields = getFieldErrors(error);
@@ -50,35 +52,35 @@ export function LoginPage() {
 
   return (
     <section className="mx-auto max-w-md space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Sign in</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Use your SWUST student email account.
-        </p>
-      </div>
-      {formError ? <ErrorMessage message={formError} /> : null}
-      <form className="space-y-4" onSubmit={onSubmit}>
-        <Input
-          label="Email"
-          type="email"
-          autoComplete="email"
-          error={form.formState.errors.email?.message}
-          {...form.register("email")}
-        />
-        <Input
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          error={form.formState.errors.password?.message}
-          {...form.register("password")}
-        />
-        <Button type="submit" isLoading={form.formState.isSubmitting}>
-          Sign in
-        </Button>
-      </form>
+      <PageHeader
+        title="Sign in"
+        description="Use your SWUST student email account."
+      />
+      <Card>
+        {formError ? <div className="mb-4"><ErrorMessage message={formError} /></div> : null}
+        <form className="space-y-4" onSubmit={onSubmit}>
+          <Input
+            label="Email"
+            type="email"
+            autoComplete="email"
+            error={form.formState.errors.email?.message}
+            {...form.register("email")}
+          />
+          <Input
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            error={form.formState.errors.password?.message}
+            {...form.register("password")}
+          />
+          <Button type="submit" className="w-full" isLoading={form.formState.isSubmitting}>
+            Sign in
+          </Button>
+        </form>
+      </Card>
       <p className="text-sm text-slate-600">
         No account yet?{" "}
-        <Link className="underline" to="/register">
+        <Link className="font-medium text-brand-700 hover:underline" to="/register">
           Register
         </Link>
       </p>

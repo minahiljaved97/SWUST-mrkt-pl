@@ -1,0 +1,55 @@
+# Production-like local stack for smoke testing.
+# Usage:
+#   copy .env.docker.example to .env.docker and edit placeholders
+#   docker compose --env-file .env.docker up --build
+#
+# Does not deploy anywhere — local containers only.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-swust_marketplace}
+      POSTGRES_USER: ${POSTGRES_USER:-swust}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-env-file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-swust} -d ${POSTGRES_DB:-swust_marketplace}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    env_file:
+      - .env.docker
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+      DATABASE_URL: postgres://${POSTGRES_USER:-swust}:${POSTGRES_PASSWORD:-change-me-in-env-file}@db:5432/${POSTGRES_DB:-swust_marketplace}
+      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-false}
+      SERVE_MEDIA: ${SERVE_MEDIA:-true}
+      USE_X_FORWARDED_HOST: "true"
+      GUNICORN_BIND: "0.0.0.0:8000"
+    volumes:
+      - media_data:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  media_data:

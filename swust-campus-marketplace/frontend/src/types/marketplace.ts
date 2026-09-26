@@ -74,10 +74,3 @@ export type ListingFilters = {
   page_size?: number;
   status?: ListingStatus;
 };
-
-export type ReportReason =
-  | "SPAM"
-  | "FRAUD"
-  | "INAPPROPRIATE"
-  | "PROHIBITED"
-  | "OTHER";

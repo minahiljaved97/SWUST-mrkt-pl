@@ -10,3 +10,6 @@ media/
 staticfiles/
 *.log
 .Python
+schema.yaml
+schema.yml
+openapi.json

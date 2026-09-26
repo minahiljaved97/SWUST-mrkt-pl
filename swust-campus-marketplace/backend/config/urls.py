@@ -1,29 +1,34 @@
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.utils.module_loading import import_string
+from django.views.static import serve
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
-from rest_framework.permissions import AllowAny
 
 from config.views import health
 
+_schema_permission_classes = [
+    import_string(path)
+    for path in settings.SPECTACULAR_SETTINGS.get(
+        "SERVE_PERMISSIONS",
+        ["rest_framework.permissions.AllowAny"],
+    )
+]
+
 schema_view = SpectacularAPIView.as_view(
-    permission_classes=[AllowAny],
-    authentication_classes=[],
+    permission_classes=_schema_permission_classes,
 )
 swagger_view = SpectacularSwaggerView.as_view(
     url_name="schema",
-    permission_classes=[AllowAny],
-    authentication_classes=[],
+    permission_classes=_schema_permission_classes,
 )
 redoc_view = SpectacularRedocView.as_view(
     url_name="schema",
-    permission_classes=[AllowAny],
-    authentication_classes=[],
+    permission_classes=_schema_permission_classes,
 )
 
 api_v1_patterns = [
@@ -34,7 +39,7 @@ api_v1_patterns = [
     path("", include("favorites.urls")),
     path("", include("messaging.urls")),
     path("", include("reports.urls")),
-    path("dashboard/", include("dashboard.urls")),
+    path("", include("dashboard.urls")),
 ]
 
 urlpatterns = [
@@ -45,5 +50,12 @@ urlpatterns = [
     path("api/<str:version>/", include((api_v1_patterns, "api"))),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG or getattr(settings, "SERVE_MEDIA", False):
+    # Prefer a reverse proxy / CDN for media in real production.
+    urlpatterns += [
+        path(
+            "media/<path:path>",
+            serve,
+            {"document_root": settings.MEDIA_ROOT},
+        ),
+    ]

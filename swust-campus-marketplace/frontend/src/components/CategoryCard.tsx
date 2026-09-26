@@ -12,9 +12,9 @@ export function CategoryCard({ category, to }: CategoryCardProps) {
   return (
     <Link
       to={href}
-      className="block rounded-lg border border-slate-200 bg-white p-4 transition hover:border-slate-400"
+      className="surface-card block p-4 transition hover:border-brand-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
     >
-      <h3 className="font-medium text-slate-900">{category.name}</h3>
+      <h3 className="font-semibold text-slate-900">{category.name}</h3>
       <p className="mt-1 line-clamp-2 text-sm text-slate-600">
         {category.description || "Browse this category"}
       </p>

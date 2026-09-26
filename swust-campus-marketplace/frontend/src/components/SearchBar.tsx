@@ -6,6 +6,7 @@ type SearchBarProps = {
   onChange: (value: string) => void;
   onSubmit?: () => void;
   placeholder?: string;
+  id?: string;
 };
 
 export function SearchBar({
@@ -13,6 +14,7 @@ export function SearchBar({
   onChange,
   onSubmit,
   placeholder = "Search textbooks, bikes, electronics…",
+  id = "marketplace-search",
 }: SearchBarProps) {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -21,20 +23,20 @@ export function SearchBar({
 
   return (
     <form role="search" onSubmit={handleSubmit} className="relative w-full">
-      <label htmlFor="marketplace-search" className="sr-only">
+      <label htmlFor={id} className="sr-only">
         Search listings
       </label>
       <Search
-        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+        className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
         aria-hidden
       />
       <input
-        id="marketplace-search"
+        id={id}
         type="search"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 outline-none focus:border-slate-900"
+        className="field-control rounded-xl py-3 pl-10 pr-3 shadow-sm"
       />
     </form>
   );
