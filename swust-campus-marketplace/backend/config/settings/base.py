@@ -66,6 +66,12 @@ DATABASES = {
     )
 }
 
+# Supabase / managed Postgres: set DATABASE_SSLMODE=require in .env
+_sslmode = env("DATABASE_SSLMODE")
+if _sslmode and DATABASES["default"].get("ENGINE") == "django.db.backends.postgresql":
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"]["sslmode"] = _sslmode
+
 AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
