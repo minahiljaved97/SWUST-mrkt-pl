@@ -44,7 +44,7 @@ LISTING_FILTER_PARAMS = [
         name="category",
         type=OpenApiTypes.STR,
         location=OpenApiParameter.QUERY,
-        description="Category slug or UUID.",
+        description="Slug or UUID.",
     ),
     OpenApiParameter(
         name="transaction_type",
@@ -62,7 +62,7 @@ LISTING_FILTER_PARAMS = [
         name="status",
         type=OpenApiTypes.STR,
         location=OpenApiParameter.QUERY,
-        description="Listing status filter. Defaults to ACTIVE on public list.",
+        description="Defaults to ACTIVE on public list.",
     ),
     OpenApiParameter(
         name="price_min",
@@ -78,7 +78,7 @@ LISTING_FILTER_PARAMS = [
         name="mine",
         type=OpenApiTypes.STR,
         location=OpenApiParameter.QUERY,
-        description="Set to `1` to list only the authenticated user's listings.",
+        description="`1` = only the caller's listings.",
     ),
     OpenApiParameter(
         name="location",
@@ -91,7 +91,6 @@ IMAGE_ID_PARAM = OpenApiParameter(
     name="image_id",
     type=OpenApiTypes.UUID,
     location=OpenApiParameter.PATH,
-    description="Listing image UUID.",
 )
 
 
@@ -99,25 +98,19 @@ IMAGE_ID_PARAM = OpenApiParameter(
     list=extend_schema(
         tags=["Listings"],
         summary="List listings",
-        description=(
-            "Requires authentication. Defaults to ACTIVE listings unless `status` or `mine=1` is set. "
-            "Owners can see their own non-public statuses via filters/`mine`."
-        ),
+        description="Defaults to ACTIVE unless `status` or `mine=1` is set.",
         parameters=LISTING_FILTER_PARAMS,
         responses={200: ListingListSerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Listings"],
         summary="Retrieve listing",
-        description=(
-            "Requires authentication. REMOVED listings are hidden except to the owner/admin."
-        ),
+        description="REMOVED listings are hidden except to the owner/admin.",
         responses={200: ListingDetailSerializer, **COMMON_ERROR_RESPONSES},
     ),
     create=extend_schema(
         tags=["Listings"],
         summary="Create listing",
-        description="Requires authentication. Seller is set to the current user.",
         request=ListingCreateUpdateSerializer,
         responses={
             201: ListingDetailSerializer,
@@ -129,14 +122,12 @@ IMAGE_ID_PARAM = OpenApiParameter(
     partial_update=extend_schema(
         tags=["Listings"],
         summary="Update listing",
-        description="Requires authentication + ownership (or admin).",
         request=ListingCreateUpdateSerializer,
         responses={200: ListingDetailSerializer, **COMMON_ERROR_RESPONSES},
     ),
     destroy=extend_schema(
         tags=["Listings"],
         summary="Soft-remove listing",
-        description="Requires ownership. Marks listing REMOVED rather than hard-deleting.",
         responses={204: OpenApiResponse(description="Listing removed."), **COMMON_ERROR_RESPONSES},
     ),
 )
@@ -204,7 +195,6 @@ class ListingViewSet(viewsets.ModelViewSet):
     @extend_schema(
         tags=["Listings"],
         summary="List my listings",
-        description="Requires authentication. Returns listings owned by the current user.",
         parameters=PAGE_PARAMS,
         responses={200: ListingListSerializer, **COMMON_ERROR_RESPONSES},
     )
@@ -227,8 +217,8 @@ class ListingViewSet(viewsets.ModelViewSet):
         tags=["Listing Images"],
         summary="Upload listing image",
         description=(
-            "Requires authentication + ownership. Multipart form: `image` (required), "
-            "`alt_text`, `is_primary`. Max 6 images; max 5 MiB; JPEG/PNG/WebP/GIF."
+            "Multipart: `image` (required), `alt_text`, `is_primary`. "
+            "Max 6 images; max 5 MiB; JPEG/PNG/WebP/GIF."
         ),
         request={"multipart/form-data": ListingImageSerializer},
         responses={
@@ -268,7 +258,6 @@ class ListingViewSet(viewsets.ModelViewSet):
     @extend_schema(
         tags=["Listing Images"],
         summary="Delete listing image",
-        description="Requires authentication + ownership.",
         parameters=[IMAGE_ID_PARAM],
         responses={204: OpenApiResponse(description="Image deleted."), **COMMON_ERROR_RESPONSES},
     )
@@ -298,7 +287,6 @@ class ListingViewSet(viewsets.ModelViewSet):
     @extend_schema(
         tags=["Listing Images"],
         summary="Set primary listing image",
-        description="Requires authentication + ownership.",
         parameters=[IMAGE_ID_PARAM],
         responses={200: ListingImageSerializer, **COMMON_ERROR_RESPONSES},
     )
@@ -327,10 +315,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         methods=["POST"],
         tags=["Favorites"],
         summary="Favorite a listing",
-        description=(
-            "Student only. Cannot favorite own listing. Duplicate open favorites return 400. "
-            "Prefer this over POST /favorites/."
-        ),
+        description="Cannot favorite own listing. Prefer over POST /favorites/.",
         responses={
             201: FavoriteSerializer,
             400: ERROR_400,
@@ -343,7 +328,6 @@ class ListingViewSet(viewsets.ModelViewSet):
         methods=["DELETE"],
         tags=["Favorites"],
         summary="Unfavorite a listing",
-        description="Student only. Removes the current user's favorite for this listing.",
         responses={204: OpenApiResponse(description="Favorite removed."), **COMMON_ERROR_RESPONSES},
     )
     @action(

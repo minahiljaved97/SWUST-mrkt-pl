@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-/** Mirrors tokenStorage key contract used by the SPA. */
 const ACCESS_KEY = "swust_access_token";
 const REFRESH_KEY = "swust_refresh_token";
 

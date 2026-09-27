@@ -14,7 +14,6 @@ class HealthResponseSerializer(serializers.Serializer):
 @extend_schema(
     tags=["Health"],
     summary="Health check",
-    description="Public. Returns API version readiness. No authentication required.",
     responses={200: HealthResponseSerializer},
     auth=[],
 )

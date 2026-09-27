@@ -79,8 +79,6 @@ class StudentReportCreateSerializer(serializers.ModelSerializer):
 
 
 class StudentReportResponseSerializer(serializers.Serializer):
-    """Neutral confirmation payload — no admin fields."""
-
     detail = serializers.CharField()
     id = serializers.UUIDField()
 

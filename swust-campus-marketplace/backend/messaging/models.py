@@ -97,5 +97,4 @@ class Message(models.Model):
                 raise ValidationError({"sender": "Sender must be a conversation participant."})
 
     def delete(self, using=None, keep_parents=False):
-        """Messages are append-only for auditability."""
         raise ProtectedError("Messages cannot be deleted.", {self})

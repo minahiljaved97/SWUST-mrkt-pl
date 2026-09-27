@@ -1,6 +1,3 @@
-"""Media URL helpers that work with local filesystem and S3/CDN URLs."""
-
-
 def absolute_media_url(request, url: str | None) -> str | None:
     if not url:
         return None

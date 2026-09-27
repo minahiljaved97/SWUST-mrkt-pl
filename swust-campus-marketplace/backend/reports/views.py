@@ -26,8 +26,8 @@ from .serializers import (
         tags=["Reports"],
         summary="Submit a report",
         description=(
-            "Student only. Body must include `listing` and/or `reported_user`, plus `reason`. "
-            "Admin notes/status are never returned. Blocks self-reports and duplicate open reports."
+            "Body: `listing` and/or `reported_user`, plus `reason`. "
+            "Blocks self-reports and duplicate open reports."
         ),
         request=StudentReportCreateSerializer,
         responses={
@@ -39,8 +39,6 @@ from .serializers import (
     ),
 )
 class ReportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    """Student report submission: POST /reports/"""
-
     permission_classes = [IsStudent]
     http_method_names = ["post", "head", "options"]
 
@@ -67,14 +65,13 @@ class ReportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     list=extend_schema(
         tags=["Admin Reports"],
         summary="List reports (admin)",
-        description="Admin only. Optional `status` filter: PENDING | REVIEWING | RESOLVED | DISMISSED.",
         parameters=[
             *PAGE_PARAMS,
             OpenApiParameter(
                 name="status",
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
-                description="Report status filter.",
+                description="PENDING | REVIEWING | RESOLVED | DISMISSED",
             ),
         ],
         responses={200: AdminReportSerializer, **COMMON_ERROR_RESPONSES},
@@ -82,15 +79,14 @@ class ReportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     retrieve=extend_schema(
         tags=["Admin Reports"],
         summary="Retrieve report (admin)",
-        description="Admin only.",
         responses={200: AdminReportSerializer, **COMMON_ERROR_RESPONSES},
     ),
     partial_update=extend_schema(
         tags=["Admin Reports"],
         summary="Update report (admin)",
         description=(
-            "Admin only. Body: `{ status?, admin_notes?, remove_listing? }`. "
-            "Setting `remove_listing: true` soft-removes the linked listing."
+            "Body: `{ status?, admin_notes?, remove_listing? }`. "
+            "`remove_listing: true` soft-removes the linked listing."
         ),
         request=AdminReportUpdateSerializer,
         responses={200: AdminReportSerializer, **COMMON_ERROR_RESPONSES},
@@ -102,12 +98,6 @@ class AdminReportViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """
-    GET /admin/reports/
-    GET /admin/reports/{id}/
-    PATCH /admin/reports/{id}/
-    """
-
     permission_classes = [IsAdmin]
     lookup_field = "id"
     http_method_names = ["get", "patch", "head", "options"]

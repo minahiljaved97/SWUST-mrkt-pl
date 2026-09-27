@@ -16,10 +16,6 @@ MAX_IMAGE_UPLOAD_BYTES = 5 * 1024 * 1024
 
 
 def validate_image_upload(uploaded_file):
-    """
-    Validate uploaded image size, extension, and declared content type.
-    Pillow/ImageField still verifies the file is a real image on save.
-    """
     size = getattr(uploaded_file, "size", None)
     if size is not None and size > MAX_IMAGE_UPLOAD_BYTES:
         raise ValidationError(

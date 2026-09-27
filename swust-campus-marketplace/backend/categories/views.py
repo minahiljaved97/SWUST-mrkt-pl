@@ -12,14 +12,12 @@ from .serializers import CategorySerializer
     list=extend_schema(
         tags=["Categories"],
         summary="List active categories",
-        description="Requires authentication. Returns active marketplace categories only.",
         parameters=[*PAGE_PARAMS, SEARCH_PARAM],
         responses={200: CategorySerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Categories"],
         summary="Retrieve category by slug",
-        description="Requires authentication. Lookup by category slug.",
         responses={200: CategorySerializer, **COMMON_ERROR_RESPONSES},
     ),
 )

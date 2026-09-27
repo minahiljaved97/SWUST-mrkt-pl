@@ -31,25 +31,19 @@ from .serializers import (
     list=extend_schema(
         tags=["Conversations"],
         summary="List my conversations",
-        description=(
-            "Student only. Inbox for conversations where the caller is buyer or seller. "
-            "Includes unread counts."
-        ),
         parameters=PAGE_PARAMS,
         responses={200: ConversationListSerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Conversations"],
         summary="Retrieve conversation thread",
-        description="Student + participant only. Returns messages and listing reference.",
         responses={200: ConversationDetailSerializer, **COMMON_ERROR_RESPONSES},
     ),
     create=extend_schema(
         tags=["Conversations"],
         summary="Start or reopen conversation",
         description=(
-            "Student only. Body: `{ listing, content? }`. Cannot message yourself. "
-            "Returns 201 when created, 200 when an existing thread is reused."
+            "Body: `{ listing, content? }`. Returns 201 when created, 200 when reused."
         ),
         request=ConversationCreateSerializer,
         responses={
@@ -140,7 +134,6 @@ class ConversationViewSet(
     @extend_schema(
         tags=["Messages"],
         summary="Send message in conversation",
-        description="Student + participant only. Body: `{ content }`.",
         request=MessageCreateSerializer,
         responses={
             201: MessageSerializer,
@@ -192,9 +185,7 @@ class MessageViewSet(viewsets.GenericViewSet):
     @extend_schema(
         tags=["Messages"],
         summary="Mark message as read",
-        description=(
-            "Student + participant only. Cannot mark your own outgoing message as read."
-        ),
+        description="Cannot mark your own outgoing message as read.",
         request=None,
         responses={
             200: MessageSerializer,

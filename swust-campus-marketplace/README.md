@@ -35,7 +35,7 @@ copy .env.example .env
 - TIME_ZONE
 
 ## Frontend (`frontend/.env` / `.env.production`)
-- `VITE_API_BASE_URL` — absolute `https://…/api/v1` or same-origin `/api/v1` (required for production builds; no localhost fallback in prod)
+- `VITE_API_BASE_URL` — required (no hardcoded fallback). Local example: `http://127.0.0.1:8000/api/v1`. Production: absolute `https://…/api/v1` or same-origin `/api/v1`.
 
 # Backend startup
 cd backend
@@ -276,25 +276,29 @@ cd backend
 python manage.py test dashboard reports
 ```
 
-Seed demo listings (optional):
+# Demo seed
+
+From anywhere (script resolves the project path):
 
 ```bash
-cd backend
-.\.venv\Scripts\Activate.ps1
-python manage.py seed_demo_listings
+./scripts/seed_demo.sh
 ```
+
+Or from `backend/`:
+
+```bash
+python manage.py seed_demo
+```
+
+| Email | Password | Role |
+| --- | --- | --- |
+| admin@swust.edu.cn | admin | ADMIN |
+| student@swust.edu.cn | student | STUDENT |
+| buyer@swust.edu.cn | buyer | STUDENT |
 
 # Notes
 Do not commit `.env`, `.env.docker`, or `.env.production`. Production must use PostgreSQL and `config.settings.production`.
 
-# Database / admin (Phase 2)
-After migrations, the five categories are seeded automatically.
-You can re-run seeding with:
-
-python manage.py seed_categories
-
-Create an admin user:
-
-python manage.py createsuperuser
-
-Then open http://127.0.0.1:8000/admin/
+# Database / admin
+Categories seed on migrate. Re-run with `python manage.py seed_categories`.
+Django admin: http://127.0.0.1:8000/admin/

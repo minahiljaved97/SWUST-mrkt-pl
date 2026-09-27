@@ -13,17 +13,13 @@ from .serializers import FavoriteCreateSerializer, FavoriteSerializer
     list=extend_schema(
         tags=["Favorites"],
         summary="List my favorites",
-        description="Student only. Returns the authenticated student's favorites.",
         parameters=PAGE_PARAMS,
         responses={200: FavoriteSerializer, **COMMON_ERROR_RESPONSES},
     ),
     create=extend_schema(
         tags=["Favorites"],
         summary="Create favorite (by listing id)",
-        description=(
-            "Student only. Legacy body create `{ listing }`. Prefer "
-            "`POST /listings/{id}/favorite/` when possible."
-        ),
+        description="Legacy body `{ listing }`. Prefer POST /listings/{id}/favorite/.",
         request=FavoriteCreateSerializer,
         responses={
             201: FavoriteSerializer,
@@ -35,7 +31,6 @@ from .serializers import FavoriteCreateSerializer, FavoriteSerializer
     destroy=extend_schema(
         tags=["Favorites"],
         summary="Delete favorite by id",
-        description="Student only. Removes a favorite owned by the current user.",
         responses={
             204: OpenApiResponse(description="Favorite deleted."),
             **COMMON_ERROR_RESPONSES,
@@ -48,12 +43,6 @@ class FavoriteViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """
-    GET /favorites/ — current student's favorites
-    POST /favorites/ — legacy create by listing id body (still supported)
-    DELETE /favorites/{id}/ — remove by favorite id
-    """
-
     permission_classes = [IsStudent]
     lookup_field = "id"
 

@@ -44,8 +44,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    """Custom user: email login, campus roles, soft deactivation."""
-
     username = None
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField("email address", unique=True, db_index=True)
@@ -78,7 +76,6 @@ class User(AbstractUser):
         return self.role == UserRole.ADMIN
 
     def soft_delete(self) -> None:
-        """Deactivate instead of permanently removing the account."""
         self.is_active = False
         self.save(update_fields=["is_active", "updated_at"])
 

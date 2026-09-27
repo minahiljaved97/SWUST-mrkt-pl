@@ -83,7 +83,6 @@ class Report(models.Model):
             raise ValidationError("A report must target a listing and/or a user.")
 
     def delete(self, using=None, keep_parents=False):
-        """Reports are retained for moderation history."""
         raise ProtectedError(
             "Reports cannot be deleted; dismiss or resolve them instead.",
             {self},

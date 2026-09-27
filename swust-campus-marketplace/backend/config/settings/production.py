@@ -16,7 +16,7 @@ DATABASES = {"default": database_config(env_required("DATABASE_URL"))}
 if DATABASES["default"]["ENGINE"] != "django.db.backends.postgresql":
     raise ValueError("Production DATABASE_URL must use PostgreSQL.")
 
-# Optional TLS for managed Postgres (set DATABASE_SSLMODE=require).
+# Optional TLS for managed Postgres (DATABASE_SSLMODE=require).
 _sslmode = env("DATABASE_SSLMODE")
 if _sslmode:
     DATABASES["default"].setdefault("OPTIONS", {})
@@ -26,7 +26,7 @@ CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS")
 if not CORS_ALLOWED_ORIGINS:
     raise ValueError("CORS_ALLOWED_ORIGINS must be set in production.")
 
-# Optional regex for Vercel preview URLs, e.g. ^https://.*\\.vercel\\.app$
+# Optional: e.g. ^https://.*\\.vercel\\.app$
 CORS_ALLOWED_ORIGIN_REGEXES = env_list("CORS_ALLOWED_ORIGIN_REGEXES")
 
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
@@ -35,7 +35,6 @@ if not CSRF_TRUSTED_ORIGINS:
 
 CORS_ALLOW_CREDENTIALS = env_bool("CORS_ALLOW_CREDENTIALS", True)
 
-# Behind nginx / a load balancer that terminates TLS.
 USE_X_FORWARDED_HOST = env_bool("USE_X_FORWARDED_HOST", True)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
@@ -52,7 +51,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 
-# Prefer an explicit JWT signing key; falls back to SECRET_KEY from base.
 _jwt_key = env("JWT_SIGNING_KEY")
 if _jwt_key:
     SIMPLE_JWT = {  # noqa: F405
@@ -60,8 +58,6 @@ if _jwt_key:
         "SIGNING_KEY": _jwt_key,
     }
 
-# Serve collected static files via WhiteNoise (middleware inserted in base).
-# Media: S3/compatible when USE_S3_MEDIA=true; otherwise local disk (EC2 volume / Docker).
 _use_s3 = env_bool("USE_S3_MEDIA", False)
 if _use_s3:
     _bucket = env_required("AWS_STORAGE_BUCKET_NAME")
@@ -69,7 +65,6 @@ if _use_s3:
     AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", "us-east-1") or "us-east-1"
     AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-    # Optional for MinIO / R2 / other S3-compatible endpoints.
     AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL") or None
     AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN") or None
     AWS_DEFAULT_ACL = None
@@ -131,10 +126,8 @@ else:
             "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
-    # Local disk media; prefer nginx/ALB only for smoke tests without S3.
     SERVE_MEDIA = env_bool("SERVE_MEDIA", False)
 
-# Keep OpenAPI docs admin-only in production.
 SPECTACULAR_SETTINGS = {
     **SPECTACULAR_SETTINGS,  # noqa: F405
     "SERVE_PERMISSIONS": ["accounts.permissions.IsAdmin"],

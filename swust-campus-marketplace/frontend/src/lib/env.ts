@@ -1,8 +1,3 @@
-/**
- * Resolves the API base URL from Vite env.
- * Production builds require VITE_API_BASE_URL (no localhost fallback).
- */
-
 function isLocalhostApiUrl(url: string): boolean {
   try {
     if (url.startsWith("/")) {
@@ -49,17 +44,14 @@ function assertSafeApiBaseUrl(url: string, requireHttpsProduction: boolean) {
 
 function resolveApiBaseUrl(): string {
   const raw = import.meta.env.VITE_API_BASE_URL?.trim();
-  if (raw) {
-    const normalized = raw.replace(/\/$/, "");
-    assertSafeApiBaseUrl(normalized, import.meta.env.PROD);
-    return normalized;
+  if (!raw) {
+    throw new Error(
+      "VITE_API_BASE_URL is missing. Copy frontend/.env.example to frontend/.env",
+    );
   }
-  if (import.meta.env.DEV) {
-    return "http://127.0.0.1:8000/api/v1";
-  }
-  throw new Error(
-    "VITE_API_BASE_URL must be set for production builds (see .env.production.example).",
-  );
+  const normalized = raw.replace(/\/$/, "");
+  assertSafeApiBaseUrl(normalized, import.meta.env.PROD);
+  return normalized;
 }
 
 export const env = {

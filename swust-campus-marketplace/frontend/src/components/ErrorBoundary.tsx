@@ -9,9 +9,6 @@ type State = {
   message: string;
 };
 
-/**
- * Catches render errors so a blank white screen is never the only feedback in production.
- */
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false, message: "" };
 

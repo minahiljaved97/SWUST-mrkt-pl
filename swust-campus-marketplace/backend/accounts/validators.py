@@ -8,7 +8,6 @@ def get_allowed_email_domains() -> list[str]:
 
 
 def validate_swust_email(email: str) -> str:
-    """Ensure the email belongs to a configured SWUST domain."""
     normalized = (email or "").strip().lower()
     if "@" not in normalized:
         raise serializers.ValidationError("Enter a valid email address.")

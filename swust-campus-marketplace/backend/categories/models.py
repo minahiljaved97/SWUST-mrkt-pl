@@ -38,6 +38,5 @@ class Category(models.Model):
         self.save(update_fields=["is_active", "updated_at"])
 
     def delete(self, using=None, keep_parents=False):
-        """Hide categories instead of hard-deleting seeded taxonomy."""
         self.soft_deactivate()
         return 0, {self._meta.label: 0}

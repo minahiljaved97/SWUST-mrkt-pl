@@ -51,7 +51,6 @@ urlpatterns = [
 ]
 
 if settings.DEBUG or getattr(settings, "SERVE_MEDIA", False):
-    # Prefer a reverse proxy / CDN for media in real production.
     urlpatterns += [
         path(
             "media/<path:path>",

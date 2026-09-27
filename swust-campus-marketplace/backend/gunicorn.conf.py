@@ -1,9 +1,3 @@
-"""Gunicorn configuration for production WSGI serving.
-
-On EC2, bind to loopback and let Nginx terminate TLS / proxy traffic.
-Override with GUNICORN_BIND=0.0.0.0:8000 only inside Docker/private networks.
-"""
-
 import os
 
 bind = os.getenv("GUNICORN_BIND", "127.0.0.1:8000")

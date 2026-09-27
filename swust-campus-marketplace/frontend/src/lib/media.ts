@@ -1,6 +1,5 @@
 import { env } from "./env";
 
-/** Resolve media paths that may be relative to the Django host. */
 export function resolveMediaUrl(url: string | null | undefined): string | null {
   if (!url) {
     return null;

@@ -43,8 +43,6 @@ User = get_user_model()
 
 
 class RegisterView(generics.CreateAPIView):
-    """Register a new SWUST student account."""
-
     permission_classes = [AllowAny]
     authentication_classes = []
     serializer_class = RegisterSerializer
@@ -53,13 +51,9 @@ class RegisterView(generics.CreateAPIView):
     @extend_schema(
         tags=["Authentication"],
         summary="Register student",
-        description=(
-            "Public endpoint. Creates a STUDENT account for an allowed campus email domain. "
-            "No authentication required. Throttled."
-        ),
         request=RegisterSerializer,
         responses={
-            201: OpenApiResponse(response=UserSerializer, description="User created."),
+            201: OpenApiResponse(response=UserSerializer),
             **AUTH_ERRORS,
         },
         auth=[],
@@ -74,16 +68,9 @@ class RegisterView(generics.CreateAPIView):
 @extend_schema(
     tags=["Authentication"],
     summary="Login",
-    description=(
-        "Public endpoint. Exchange email/password for JWT access + refresh tokens and user profile. "
-        "Throttled."
-    ),
     request=EmailTokenObtainPairSerializer,
     responses={
-        200: OpenApiResponse(
-            response=LoginResponseSerializer,
-            description="JWT pair and user payload.",
-        ),
+        200: OpenApiResponse(response=LoginResponseSerializer),
         **AUTH_ERRORS,
     },
     auth=[],
@@ -98,9 +85,8 @@ class LoginView(TokenObtainPairView):
 @extend_schema(
     tags=["Authentication"],
     summary="Refresh access token",
-    description="Public endpoint. Rotate/refresh JWT access token using a valid refresh token.",
     responses={
-        200: OpenApiResponse(description="New access token (and rotated refresh when enabled)."),
+        200: OpenApiResponse(description="New access token."),
         **AUTH_ERRORS,
     },
     auth=[],
@@ -112,8 +98,6 @@ class RefreshTokenView(TokenRefreshView):
 
 
 class LogoutView(APIView):
-    """Blacklist the refresh token."""
-
     permission_classes = [IsAuthenticated]
     throttle_classes = [AuthBurstUserThrottle]
     serializer_class = LogoutSerializer
@@ -121,7 +105,6 @@ class LogoutView(APIView):
     @extend_schema(
         tags=["Authentication"],
         summary="Logout",
-        description="Requires Bearer JWT. Blacklists the provided refresh token.",
         request=LogoutSerializer,
         responses={
             205: OpenApiResponse(description="Refresh token blacklisted."),
@@ -145,8 +128,6 @@ class LogoutView(APIView):
 
 
 class MeView(APIView):
-    """Current authenticated user profile (self)."""
-
     permission_classes = [IsAuthenticatedAndActive, IsOwner]
     throttle_classes = [AuthBurstUserThrottle]
 
@@ -156,7 +137,6 @@ class MeView(APIView):
     @extend_schema(
         tags=["Users & Profiles"],
         summary="Get my profile",
-        description="Requires Bearer JWT. Returns the authenticated user's profile including profile fields.",
         responses={
             200: UserSerializer,
             401: ERROR_401,
@@ -170,10 +150,7 @@ class MeView(APIView):
     @extend_schema(
         tags=["Users & Profiles"],
         summary="Update my profile",
-        description=(
-            "Requires Bearer JWT. Partial update of name and profile fields "
-            "(phone, bio, campus_location). Does not change email, role, or student_id."
-        ),
+        description="Partial update of name and profile fields. Does not change email, role, or student_id.",
         request=MeUpdateSerializer,
         responses={
             200: UserSerializer,
@@ -196,27 +173,23 @@ class MeView(APIView):
     list=extend_schema(
         tags=["Users & Profiles"],
         summary="List users (admin)",
-        description="Admin only. Search/filter students and admins. Phone numbers are not included.",
+        description="Phone numbers are omitted.",
         parameters=[*PAGE_PARAMS, SEARCH_PARAM],
         responses={200: AdminManagedUserSerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Users & Profiles"],
         summary="Retrieve user (admin)",
-        description="Admin only. Fetch one user by UUID without phone/image fields.",
         responses={200: AdminManagedUserSerializer, **COMMON_ERROR_RESPONSES},
     ),
     partial_update=extend_schema(
         tags=["Users & Profiles"],
         summary="Update user (admin)",
-        description="Admin only. Activate/deactivate or adjust role/name fields.",
         request=AdminUserUpdateSerializer,
         responses={200: AdminManagedUserSerializer, **COMMON_ERROR_RESPONSES},
     ),
 )
 class AdminUserViewSet(viewsets.ModelViewSet):
-    """Admin-only user management (list/retrieve/update; no create/destroy)."""
-
     permission_classes = [IsAdmin]
     queryset = User.objects.select_related("profile").all()
     http_method_names = ["get", "patch", "head", "options"]

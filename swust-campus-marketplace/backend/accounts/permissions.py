@@ -38,10 +38,7 @@ class IsAdmin(BasePermission):
 
 
 class IsOwner(BasePermission):
-    """
-    Object-level ownership check.
-    Supports User objects, models with `.user`, and listings with `.seller`.
-    """
+    """Object ownership via User, `.user`, or listing `.seller`."""
 
     message = "You do not have permission to modify this resource."
 

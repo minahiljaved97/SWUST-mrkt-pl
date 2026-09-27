@@ -229,20 +229,18 @@ ADMIN_LISTING_PARAMS = [
     list=extend_schema(
         tags=["Admin Dashboard"],
         summary="List users (admin dashboard)",
-        description="Admin only. Search/filter users. Phone numbers are omitted.",
+        description="Phone numbers are omitted.",
         parameters=ADMIN_USER_PARAMS,
         responses={200: AdminUserSummarySerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Admin Dashboard"],
         summary="Retrieve user (admin dashboard)",
-        description="Admin only.",
         responses={200: AdminUserDetailSerializer, **COMMON_ERROR_RESPONSES},
     ),
     partial_update=extend_schema(
         tags=["Admin Dashboard"],
         summary="Activate/deactivate user",
-        description="Admin only. Body: `{ is_active }`.",
         request=AdminUserStatusSerializer,
         responses={200: AdminUserDetailSerializer, **COMMON_ERROR_RESPONSES},
     ),
@@ -287,7 +285,6 @@ class AdminUserViewSet(
     @extend_schema(
         tags=["Admin Dashboard"],
         summary="List listings for a user",
-        description="Admin only. Paginated listings owned by the selected user.",
         parameters=PAGE_PARAMS,
         responses={200: AdminListingSerializer, **COMMON_ERROR_RESPONSES},
     )
@@ -315,22 +312,19 @@ class AdminUserViewSet(
     list=extend_schema(
         tags=["Admin Dashboard"],
         summary="List all listings (admin)",
-        description="Admin only. Includes non-ACTIVE and REMOVED listings.",
+        description="Includes non-ACTIVE and REMOVED listings.",
         parameters=ADMIN_LISTING_PARAMS,
         responses={200: AdminListingSerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Admin Dashboard"],
         summary="Retrieve listing (admin)",
-        description="Admin only.",
         responses={200: AdminListingSerializer, **COMMON_ERROR_RESPONSES},
     ),
     partial_update=extend_schema(
         tags=["Admin Dashboard"],
         summary="Moderate listing status",
-        description=(
-            "Admin only. Body: `{ status? }` or `{ remove: true }` or `{ restore: true }`."
-        ),
+        description="Body: `{ status? }`, `{ remove: true }`, or `{ restore: true }`.",
         request=AdminListingUpdateSerializer,
         responses={200: AdminListingSerializer, **COMMON_ERROR_RESPONSES},
     ),
@@ -384,20 +378,18 @@ class AdminListingViewSet(
     list=extend_schema(
         tags=["Admin Dashboard"],
         summary="List categories (admin)",
-        description="Admin only. Includes inactive categories and listing counts.",
+        description="Includes inactive categories and listing counts.",
         parameters=[*PAGE_PARAMS, SEARCH_PARAM, ORDERING_PARAM],
         responses={200: AdminCategorySerializer, **COMMON_ERROR_RESPONSES},
     ),
     retrieve=extend_schema(
         tags=["Admin Dashboard"],
         summary="Retrieve category (admin)",
-        description="Admin only.",
         responses={200: AdminCategorySerializer, **COMMON_ERROR_RESPONSES},
     ),
     create=extend_schema(
         tags=["Admin Dashboard"],
         summary="Create category",
-        description="Admin only.",
         request=AdminCategoryWriteSerializer,
         responses={
             201: AdminCategorySerializer,
@@ -409,7 +401,6 @@ class AdminListingViewSet(
     partial_update=extend_schema(
         tags=["Admin Dashboard"],
         summary="Update category",
-        description="Admin only.",
         request=AdminCategoryWriteSerializer,
         responses={200: AdminCategorySerializer, **COMMON_ERROR_RESPONSES},
     ),
@@ -464,7 +455,6 @@ class AdminDashboardSummaryView(APIView):
     @extend_schema(
         tags=["Admin Dashboard"],
         summary="Dashboard summary counts",
-        description="Admin only. High-level counts for overview cards.",
         responses={
             200: DashboardSummarySerializer,
             401: ERROR_401,
@@ -496,7 +486,6 @@ class AdminDashboardStatisticsView(APIView):
     @extend_schema(
         tags=["Admin Dashboard"],
         summary="Activity statistics",
-        description="Admin only. Bucketed listing statistics for charts.",
         responses={
             200: DashboardStatisticsSerializer,
             401: ERROR_401,

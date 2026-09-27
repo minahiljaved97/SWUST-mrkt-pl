@@ -1,16 +1,13 @@
-"""Shared OpenAPI / drf-spectacular helpers for accurate API docs."""
-
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiExample, OpenApiParameter, OpenApiResponse
 from rest_framework import serializers
 
 
 class ErrorResponseSerializer(serializers.Serializer):
-    detail = serializers.CharField(help_text="Human-readable error summary.")
+    detail = serializers.CharField()
     errors = serializers.DictField(
         child=serializers.JSONField(),
         required=False,
-        help_text="Optional field-level validation errors.",
     )
     code = serializers.CharField(required=False)
 
@@ -21,23 +18,23 @@ class MessageDetailSerializer(serializers.Serializer):
 
 ERROR_400 = OpenApiResponse(
     response=ErrorResponseSerializer,
-    description="Validation failed or bad request.",
+    description="Bad request.",
 )
 ERROR_401 = OpenApiResponse(
     response=ErrorResponseSerializer,
-    description="Authentication credentials were not provided or are invalid.",
+    description="Unauthenticated.",
 )
 ERROR_403 = OpenApiResponse(
     response=ErrorResponseSerializer,
-    description="Authenticated but not permitted for this action.",
+    description="Forbidden.",
 )
 ERROR_404 = OpenApiResponse(
     response=ErrorResponseSerializer,
-    description="Resource not found or not visible to the caller.",
+    description="Not found.",
 )
 ERROR_429 = OpenApiResponse(
     response=ErrorResponseSerializer,
-    description="Rate limit exceeded.",
+    description="Throttled.",
 )
 
 COMMON_ERROR_RESPONSES = {
@@ -58,7 +55,6 @@ UUID_ID = OpenApiParameter(
     name="id",
     type=OpenApiTypes.UUID,
     location=OpenApiParameter.PATH,
-    description="Resource UUID.",
 )
 
 PAGE_PARAMS = [
@@ -66,13 +62,11 @@ PAGE_PARAMS = [
         name="page",
         type=OpenApiTypes.INT,
         location=OpenApiParameter.QUERY,
-        description="Page number (1-based).",
     ),
     OpenApiParameter(
         name="page_size",
         type=OpenApiTypes.INT,
         location=OpenApiParameter.QUERY,
-        description="Results per page (max 50).",
     ),
 ]
 
@@ -80,14 +74,13 @@ SEARCH_PARAM = OpenApiParameter(
     name="search",
     type=OpenApiTypes.STR,
     location=OpenApiParameter.QUERY,
-    description="Full-text search term.",
 )
 
 ORDERING_PARAM = OpenApiParameter(
     name="ordering",
     type=OpenApiTypes.STR,
     location=OpenApiParameter.QUERY,
-    description="Ordering field. Prefix with `-` for descending.",
+    description="Prefix with `-` for descending.",
 )
 
 BEARER_SECURITY = [{"bearerAuth": []}]

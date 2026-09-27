@@ -124,7 +124,6 @@ class Listing(models.Model):
         self.save(update_fields=["status", "removed_reason", "updated_at"])
 
     def delete(self, using=None, keep_parents=False):
-        """Marketplace listings are closed via status, not hard-deleted."""
         self.soft_remove(reason="Deleted via admin/system")
         return 0, {self._meta.label: 0}
 

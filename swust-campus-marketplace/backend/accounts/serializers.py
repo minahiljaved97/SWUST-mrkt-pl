@@ -45,8 +45,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AdminManagedUserSerializer(serializers.ModelSerializer):
-    """Admin user list/detail without phone or profile image URLs."""
-
     student_id = serializers.CharField(
         source="profile.student_id", read_only=True, default=""
     )
@@ -122,10 +120,8 @@ class RegisterSerializer(serializers.Serializer):
 
 
 class LoginResponseSerializer(serializers.Serializer):
-    """Documented login success payload (tokens + user)."""
-
-    access = serializers.CharField(help_text="JWT access token.")
-    refresh = serializers.CharField(help_text="JWT refresh token.")
+    access = serializers.CharField()
+    refresh = serializers.CharField()
     user = UserSerializer()
 
 

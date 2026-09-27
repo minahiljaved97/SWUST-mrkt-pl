@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 def custom_exception_handler(exc, context):
-    """Normalize DRF errors; log and return JSON for unexpected failures."""
     response = drf_exception_handler(exc, context)
     if response is None:
         view = context.get("view")
