@@ -5,6 +5,14 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "http://3.26.65.149/api/:path*"
+    },
+    {
+      "source": "/media/:path*",
+      "destination": "http://3.26.65.149/media/:path*"
+    },
+    {
       "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }
