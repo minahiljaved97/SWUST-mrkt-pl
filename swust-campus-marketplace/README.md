@@ -1,7 +1,9 @@
 # Prerequisites
 - Python 3.12+ (3.14 is fine if Django installs)
 - Node.js 20+ and npm
-- PostgreSQL 16+ for production (local development defaults to SQLite)
+- PostgreSQL for production (local development defaults to SQLite; Supabase free tier works)
+
+Deploy (Vercel + EC2 + Supabase): see [`QUICKSTART_DEPLOY.md`](QUICKSTART_DEPLOY.md). Full EC2 detail: [`DEPLOYMENT.md`](DEPLOYMENT.md).
 
 # Installation
 ## Backend

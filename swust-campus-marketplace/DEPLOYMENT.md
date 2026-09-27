@@ -8,9 +8,11 @@ serves this API. The React app stays on **Vercel** and is **not** deployed here.
 
 ```
 Internet → Vercel (React) —HTTPS API→ Nginx (EC2) → Gunicorn → Django
-                                              ├→ PostgreSQL (prefer RDS)
-                                              └→ Media (prefer S3)
+                                              ├→ PostgreSQL (Supabase free / RDS)
+                                              └→ Media (Supabase Storage / S3 / EC2 disk)
 ```
+
+Free-tier walkthrough: [`QUICKSTART_DEPLOY.md`](QUICKSTART_DEPLOY.md).
 
 Templates used by this guide live under `deploy/`:
 
@@ -155,13 +157,15 @@ sudo -u deploy -H bash -lc '
 
 Use a deploy key or HTTPS credential helper; **do not** embed PATs in the remote URL in scripts you commit.
 
-Create the first release manually (or use `deploy/scripts/release.sh` after the first symlink exists):
+Create the first release manually (or use `deploy/scripts/release.sh` after the first symlink exists).
+
+This GitHub repo nests the app under `swust-campus-marketplace/`. Releases only sync that folder so paths stay `current/backend`, `current/deploy`, etc.
 
 ```bash
 sudo -u deploy -H bash -lc '
   cd /var/www/swust-api
   TS=$(date +%Y%m%d%H%M%S)
-  rsync -a --exclude .git repo/ "releases/$TS/"
+  rsync -a --exclude .git repo/swust-campus-marketplace/ "releases/$TS/"
   ln -sfn "releases/$TS" current
   cd current/backend
   python3 -m venv .venv
@@ -171,11 +175,26 @@ sudo -u deploy -H bash -lc '
 '
 ```
 
+For a shorter free-tier path (Vercel + EC2 + Supabase), see [`QUICKSTART_DEPLOY.md`](QUICKSTART_DEPLOY.md).
+
 ---
 
 ## 5. PostgreSQL configuration
 
-### Recommended: Amazon RDS
+### Recommended free path: Supabase
+
+1. Create a Supabase project.
+2. **Settings → Database** → copy the URI connection string.
+3. Set on EC2:
+
+```bash
+DATABASE_URL=postgres://postgres.YOUR_REF:PASSWORD@HOST:5432/postgres
+DATABASE_SSLMODE=require
+```
+
+Use a direct/session connection for migrations if the transaction pooler errors.
+
+### Alternative: Amazon RDS
 
 1. Create an RDS PostgreSQL 16 instance in a **private subnet** if possible.
 2. Security group: allow inbound **5432** only from the EC2 security group (not `0.0.0.0/0`).

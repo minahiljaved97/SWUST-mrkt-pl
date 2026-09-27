@@ -1,6 +1,11 @@
 # Deployment templates (EC2)
 
-These files support [`../DEPLOYMENT.md`](../DEPLOYMENT.md). They contain **placeholders only** — no real credentials.
+Start with [`../QUICKSTART_DEPLOY.md`](../QUICKSTART_DEPLOY.md) (Vercel + EC2 + Supabase).
+Full EC2 detail: [`../DEPLOYMENT.md`](../DEPLOYMENT.md).
+
+Templates contain **placeholders only** — no real credentials.
+
+`release.sh` syncs `swust-campus-marketplace/` from the git clone into each release (default ref: `master`).
 
 | Path | Install on server as |
 | --- | --- |

@@ -3,30 +3,39 @@
 # Usage:
 #   ./deploy/scripts/release.sh <git-ref>
 # Example:
-#   ./deploy/scripts/release.sh main
-#   ./deploy/scripts/release.sh v1.2.3
+#   ./deploy/scripts/release.sh master
+#   HEALTH_URL=https://api.example.com/api/v1/health/ ./deploy/scripts/release.sh master
 #
 # Expects directory layout:
-#   /var/www/swust-api/repo          — bare or clone of the git repo
-#   /var/www/swust-api/releases/     — timestamped checkouts
-#   /var/www/swust-api/current       — symlink to active release
-#   /etc/swust-api/env               — production environment file
+#   /var/www/swust-api/repo                          — git clone of SWUST-mrkt-pl
+#   /var/www/swust-api/repo/swust-campus-marketplace — app source synced into releases
+#   /var/www/swust-api/releases/                     — timestamped releases
+#   /var/www/swust-api/current                       — symlink to active release
+#   /etc/swust-api/env                               — production environment file
 #
 # Does not print or echo secret values.
 
 set -euo pipefail
 
-REF="${1:-main}"
+REF="${1:-master}"
 APP_ROOT="/var/www/swust-api"
 REPO_DIR="${APP_ROOT}/repo"
+# This monorepo keeps the app under swust-campus-marketplace/
+APP_SRC="${REPO_DIR}/swust-campus-marketplace"
 RELEASES_DIR="${APP_ROOT}/releases"
 TIMESTAMP="$(date +%Y%m%d%H%M%S)"
 RELEASE_DIR="${RELEASES_DIR}/${TIMESTAMP}"
 BACKEND_DIR="${RELEASE_DIR}/backend"
 KEEP_RELEASES="${KEEP_RELEASES:-5}"
+HEALTH_URL="${HEALTH_URL:-https://api.example.com/api/v1/health/}"
 
 if [[ ! -d "${REPO_DIR}/.git" ]]; then
   echo "Missing git clone at ${REPO_DIR}"
+  exit 1
+fi
+
+if [[ ! -d "${APP_SRC}/backend" ]]; then
+  echo "Missing app at ${APP_SRC} (expected swust-campus-marketplace/backend)"
   exit 1
 fi
 
@@ -45,7 +54,7 @@ rsync -a --delete \
   --exclude 'backend/.env' \
   --exclude 'frontend/node_modules' \
   --exclude 'frontend/dist' \
-  "${REPO_DIR}/" "${RELEASE_DIR}/"
+  "${APP_SRC}/" "${RELEASE_DIR}/"
 
 echo "==> Python venv + dependencies"
 python3 -m venv "${BACKEND_DIR}/.venv"
@@ -68,7 +77,7 @@ echo "==> Activate release"
 ln -sfn "${RELEASE_DIR}" "${APP_ROOT}/current"
 sudo systemctl restart gunicorn
 sudo systemctl is-active --quiet gunicorn
-curl -fsS "https://api.example.com/api/v1/health/" >/dev/null
+curl -fsS "${HEALTH_URL}" >/dev/null
 
 echo "==> Prune old releases (keep ${KEEP_RELEASES})"
 # shellcheck disable=SC2012
