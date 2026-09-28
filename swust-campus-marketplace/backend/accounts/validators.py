@@ -7,20 +7,24 @@ def get_allowed_email_domains() -> list[str]:
     return [domain.strip().lower() for domain in domains if domain.strip()]
 
 
-def validate_swust_email(email: str) -> str:
+def validate_registration_email(email: str) -> str:
     normalized = (email or "").strip().lower()
     if "@" not in normalized:
         raise serializers.ValidationError("Enter a valid email address.")
 
-    domain = normalized.rsplit("@", 1)[-1]
     allowed = get_allowed_email_domains()
-    if not allowed:
-        raise serializers.ValidationError(
-            "Registration is temporarily unavailable: no allowed email domains are configured."
-        )
+    # Empty list or "*" means any email domain is allowed.
+    if not allowed or "*" in allowed:
+        return normalized
+
+    domain = normalized.rsplit("@", 1)[-1]
     if domain not in allowed:
         allowed_display = ", ".join(allowed)
         raise serializers.ValidationError(
-            f"Registration is limited to SWUST email addresses ({allowed_display})."
+            f"Registration is limited to these email domains: {allowed_display}."
         )
     return normalized
+
+
+# Backwards-compatible alias
+validate_swust_email = validate_registration_email

@@ -20,6 +20,10 @@ RuntimeDirectory=gunicorn
 WorkingDirectory=/var/www/swust-api/current/backend
 EnvironmentFile=-/etc/swust-api/env
 Environment=DJANGO_SETTINGS_MODULE=config.settings.production
+# Keep HOME off /home so ProtectHome does not break psycopg SSL (Supabase).
+Environment=HOME=/var/www/swust-api/home
+Environment=PGSSLCERT=
+Environment=PGSSLKEY=
 ExecStart=/var/www/swust-api/current/backend/.venv/bin/gunicorn \
     --config gunicorn.conf.py \
     config.wsgi:application
@@ -32,7 +36,7 @@ RestartSec=5
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
-ProtectHome=true
+ProtectHome=read-only
 ReadWritePaths=/var/www/swust-api /var/log/swust-api
 
 [Install]

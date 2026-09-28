@@ -190,5 +190,5 @@ SPECTACULAR_SETTINGS = {
 
 ALLOWED_EMAIL_DOMAINS = env_list(
     "ALLOWED_EMAIL_DOMAINS",
-    "mails.swust.edu.cn,swust.edu.cn",
+    "",
 )

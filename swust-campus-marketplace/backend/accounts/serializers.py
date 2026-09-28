@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Profile, UserRole
-from .validators import validate_swust_email
+from .validators import validate_registration_email
 
 User = get_user_model()
 
@@ -77,7 +77,7 @@ class RegisterSerializer(serializers.Serializer):
     student_id = serializers.CharField(max_length=32)
 
     def validate_email(self, value: str) -> str:
-        email = validate_swust_email(value)
+        email = validate_registration_email(value)
         if User.objects.filter(email__iexact=email).exists():
             raise serializers.ValidationError("A user with this email already exists.")
         return email

@@ -33,7 +33,7 @@ copy .env.example .env
 - JWT_SIGNING_KEY (optional; falls back to SECRET_KEY)
 - JWT_ACCESS_MINUTES
 - JWT_REFRESH_DAYS
-- ALLOWED_EMAIL_DOMAINS
+- ALLOWED_EMAIL_DOMAINS (empty = any email; or comma-list to restrict)
 - TIME_ZONE
 
 ## Frontend (`frontend/.env` / `.env.production`)

@@ -9,7 +9,7 @@ import { Button, Card, ErrorMessage, Input, PageHeader, useToast } from "../comp
 import { useAuth } from "../features/auth/AuthContext";
 
 const schema = z.object({
-  email: z.string().email("Enter a valid SWUST email"),
+  email: z.string().email("Enter a valid email"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
@@ -61,7 +61,7 @@ export function RegisterPage() {
     <section className="mx-auto max-w-md space-y-6">
       <PageHeader
         title="Create student account"
-        description="Registration is limited to configured SWUST email domains."
+        description="Use any email address to create your marketplace account."
       />
       <Card>
         {formError ? <div className="mb-4"><ErrorMessage message={formError} /></div> : null}

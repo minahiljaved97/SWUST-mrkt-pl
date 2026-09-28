@@ -66,7 +66,7 @@ export function HomePage() {
           </h1>
           <p className="mt-3 max-w-2xl muted">
             Buy, borrow, and exchange student items across campus. Sign in with
-            your SWUST email to browse live listings.
+            your email to browse live listings.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button size="lg" onClick={() => navigate("/login")}>

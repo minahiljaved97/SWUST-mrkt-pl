@@ -71,7 +71,7 @@ class AuthenticationAPITests(APITestCase):
         )
         self.assertEqual(logout.status_code, status.HTTP_205_RESET_CONTENT)
 
-    def test_register_rejects_non_swust_email(self):
+    def test_register_accepts_any_email_domain(self):
         url = reverse("api:auth-register", kwargs={"version": "v1"})
         response = self.client.post(
             url,
@@ -84,7 +84,8 @@ class AuthenticationAPITests(APITestCase):
             },
             format="json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["email"], "outsider@gmail.com")
 
     def test_student_cannot_list_admin_users(self):
         self.client.force_authenticate(user=self.student)
