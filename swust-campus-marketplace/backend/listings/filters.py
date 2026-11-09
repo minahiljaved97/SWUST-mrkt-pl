@@ -1,3 +1,4 @@
+import uuid
 """Marketplace filters with optional XML-RPC search in local development.
 
 The normal authenticated Marketplace listing search uses a separate RPC worker.
@@ -117,8 +118,14 @@ class ListingFilter(filters.FilterSet):
         return queryset.filter(status=ListingStatus.ACTIVE, pk__in=ids)
 
     def filter_category(self, queryset, name, value):
-        if not value:
-            return queryset
-        return queryset.filter(
-            Q(category__slug=value) | Q(category_id=value)
-        )
+     if not value:
+        return queryset
+
+     try:
+        category_uuid = uuid.UUID(str(value))
+     except (ValueError, TypeError, AttributeError):
+        return queryset.filter(category__slug=value)
+
+     return queryset.filter(
+        Q(category__slug=value) | Q(category_id=category_uuid)
+    )
