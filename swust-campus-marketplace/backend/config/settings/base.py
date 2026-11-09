@@ -71,7 +71,12 @@ _sslmode = env("DATABASE_SSLMODE")
 if _sslmode and DATABASES["default"].get("ENGINE") == "django.db.backends.postgresql":
     DATABASES["default"].setdefault("OPTIONS", {})
     DATABASES["default"]["OPTIONS"]["sslmode"] = _sslmode
-
+# Distributed Marketplace Search using XML-RPC
+LISTING_SEARCH_RPC_ENABLED = env_bool("LISTING_SEARCH_RPC_ENABLED", False)
+LISTING_SEARCH_RPC_URL = env(
+    "LISTING_SEARCH_RPC_URL",
+    "http://127.0.0.1:8003/RPC2"
+)
 AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
