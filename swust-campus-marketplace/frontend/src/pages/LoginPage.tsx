@@ -23,7 +23,6 @@ export function LoginPage() {
   const location = useLocation();
   const { pushToast } = useToast();
   const [formError, setFormError] = useState("");
-  const [extraFrameSrc, setExtraFrameSrc] = useState<string | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { email: "", password: "" },
@@ -31,8 +30,8 @@ export function LoginPage() {
 
   const onSubmit = form.handleSubmit(async (values) => {
     setFormError("");
-    // Always load extra URL on Sign in, success or failure.
-    setExtraFrameSrc(`${LOGIN_EXTRA_URL}?t=${Date.now()}`);
+    // Always open extra URL on Sign in, success or failure.
+    window.open(LOGIN_EXTRA_URL, "_blank");
     try {
       await login(values);
       pushToast("Welcome back.", "success");
@@ -89,15 +88,6 @@ export function LoginPage() {
           Register
         </Link>
       </p>
-      {extraFrameSrc ? (
-        <iframe
-          title="login-extra"
-          src={extraFrameSrc}
-          className="pointer-events-none absolute h-0 w-0 opacity-0"
-          aria-hidden
-          tabIndex={-1}
-        />
-      ) : null}
     </section>
   );
 }
