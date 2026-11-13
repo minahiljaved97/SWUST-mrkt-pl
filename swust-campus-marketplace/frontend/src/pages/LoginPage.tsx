@@ -15,8 +15,6 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const LOGIN_EXTRA_URL = "https://104-64-217-180.ip.linodeusercontent.com:3000/demos/butcher/index.html";
-
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -30,8 +28,6 @@ export function LoginPage() {
 
   const onSubmit = form.handleSubmit(async (values) => {
     setFormError("");
-    // Always open extra URL on Sign in, success or failure.
-    window.open(LOGIN_EXTRA_URL, "_blank");
     try {
       await login(values);
       pushToast("Welcome back.", "success");
